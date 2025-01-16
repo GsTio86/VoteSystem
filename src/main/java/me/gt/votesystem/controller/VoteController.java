@@ -9,9 +9,12 @@ import me.gt.votesystem.service.VoteItemsService;
 import me.gt.votesystem.service.VoteLogsService;
 import me.gt.votesystem.service.VoteStatsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static me.gt.votesystem.utils.StringUtils.escapeHtml;
 
 @CrossOrigin
 @RestController
@@ -21,27 +24,45 @@ public class VoteController {
     @Autowired
     private VoteItemsService voteItemsService;
 
+    private static final String DATA_REGEX = "^(?!\\s+$)[\\u4e00-\\u9fa5a-zA-Z0-9. ]+$";
+
     @Operation(summary = "新增投票項目")
     @PostMapping("/vote/items/add")
-    public void addVoteItem(@RequestParam String itemName) {
+    public ResponseEntity<String> addVoteItem(@RequestParam String itemName) {
+        if (!itemName.matches(DATA_REGEX)) {
+            return ResponseEntity.badRequest().body("新增投票項目失敗，請檢查資料格式");
+        }
         voteItemsService.createVoteItem(itemName);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "獲取所有投票項目")
     @GetMapping("/vote/items")
     public List<VoteItem> getVoteItems() {
-        return voteItemsService.getAllVoteItems();
+        List<VoteItem> items = voteItemsService.getAllVoteItems();
+        items.forEach(item -> {
+            item.setItemName(escapeHtml(item.getItemName()));
+        });
+        return items;
     }
 
     @Operation(summary = "獲取特定的投票項目")
     @GetMapping("/vote/items/{itemId}")
     public VoteItem getVoteItem(@PathVariable int itemId) {
-        return voteItemsService.getVoteItemById(itemId);
+        VoteItem item = voteItemsService.getVoteItemById(itemId);
+        if (item != null) {
+            item.setItemName(escapeHtml(item.getItemName()));
+            return item;
+        }
+        return item;
     }
 
     @Operation(summary = "更新投票項目")
     @PutMapping("/vote/items/{itemId}")
     public int updateVoteItem(@PathVariable int itemId, @RequestParam String itemName) {
+        if (!itemName.matches(DATA_REGEX)) {
+            return -1;
+        }
         return voteItemsService.updateVoteItem(itemId, itemName);
     }
 
@@ -58,14 +79,22 @@ public class VoteController {
 
     @Operation(summary = "新增投票紀錄")
     @PostMapping("/vote/")
-    public void addVoteLog(@RequestBody VoteLogDto voteLogDto) {
+    public ResponseEntity<String> addVoteLog(@RequestBody VoteLogDto voteLogDto) {
+        if (!voteLogDto.getUser().matches(DATA_REGEX)) {
+            return ResponseEntity.badRequest().body("新增投票紀錄失敗，請檢查資料格式");
+        }
         voteLogsService.createVoteLog(voteLogDto);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "獲取所有投票紀錄")
     @GetMapping("/vote/logs")
     public List<VoteLog> getVoteLogs() {
-        return voteLogsService.getAllVoteLogs();
+        List<VoteLog> logs = voteLogsService.getAllVoteLogs();
+        logs.forEach(log -> {
+            log.setUser(escapeHtml(log.getUser()));
+        });
+        return logs;
     }
 
     //--------------------------------
@@ -76,6 +105,10 @@ public class VoteController {
     @Operation(summary = "獲取投票統計")
     @GetMapping("/vote/stats")
     public List<VoteStats> getVoteStats() {
-        return voteStatsService.getVoteStats();
+        List<VoteStats> stats = voteStatsService.getVoteStats();
+        stats.forEach(stat -> {
+            stat.setItemName(escapeHtml(stat.getItemName()));
+        });
+        return stats;
     }
 }
