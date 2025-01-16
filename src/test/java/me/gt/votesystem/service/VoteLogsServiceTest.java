@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -19,7 +21,7 @@ class VoteLogsServiceTest {
         VoteLogDto voteLogDto = VoteLogDto
                 .builder()
                 .user("test")
-                .itemIds(new int[]{1, 3,5,7,8})
+                .itemIds(Set.of(1, 2,3,4,5))
                 .build();
         voteLogsService.createVoteLog(voteLogDto);
     }
