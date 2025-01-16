@@ -163,7 +163,7 @@ const app = createApp({
                 },
                 {
                     validator: (rule, value, callback) => {
-                        const regex = /^[\u4e00-\u9fa5a-zA-Z0-9. ]+$/;
+                        const regex = /^(?!\s+$)[\u4e00-\u9fa5a-zA-Z0-9. ]+$/;
                         if (regex.test(value)) {
                             callback();
                         } else {
