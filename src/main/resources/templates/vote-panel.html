@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>線上投票系統後台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="//unpkg.com/element-plus/dist/index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/element-plus"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app" class="container mt-5">
+    <h2 class="display-5">投票項目管理</h2>
+    <a href="/" class="btn btn-outline-primary mt-3">返回首頁</a>
+
+    <el-card class="mt-4">
+        <el-row :gutter="20" class="mt-4" type="flex" align="middle" style="margin-bottom: 20px;">
+            <el-col :span="4">
+                <el-button type="primary" @click="openCreateDialog">新建商品</el-button>
+            </el-col>
+
+            <el-col :span="14" style="margin-left: auto; display: flex; justify-content: flex-end;">
+                <el-input v-model="searchId" placeholder="搜尋投票項目編號" style="width: 200px; margin-right: 10px;"></el-input>
+                <el-button type="primary" @click="searchVoteItems">搜尋</el-button>
+            </el-col>
+        </el-row>
+
+        <el-table :data="paginatedVoteItems" stripe style="width: 100%">
+            <el-table-column label="投票項目編號" prop="itemId" width="120"></el-table-column>
+            <el-table-column label="投票項目名稱" prop="itemName"></el-table-column>
+            <el-table-column label="目前投票數" prop="voteCount"></el-table-column>
+            <el-table-column label="操作" align="right" width="150">
+                <template #default="scope">
+                    <el-button size="mini" type="primary" @click="editVoteItem(scope.row.itemId, scope.row.itemName)">
+                        <i class="bi bi-pencil"></i>
+                    </el-button>
+                    <el-button size="mini" type="danger" @click="confirmDeleteVoteItem(scope.row.itemId)">
+                        <i class="bi bi-trash"></i>
+                    </el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-pagination
+                v-if="voteItems.length > pageSize"
+                :current-page="currentPage"
+                :page-size="pageSize"
+                :total="voteItems.length"
+                background
+                class="pagination mt-3"
+                layout="prev, pager, next, jumper"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+        />
+    </el-card>
+
+    <el-dialog v-model="createDialogVisible" title="新建投票項目" width="30%">
+        <el-form :model="createData" label-width="80px" :rules="createRules" ref="createForm" @input="checkCreateDataValid">
+            <el-form-item label="項目名稱" prop="itemName">
+                <el-input v-model="createData.itemName" placeholder="項目名稱" maxlength="64" show-word-limit></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="createDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="createVoteItem" :disabled="!isCreateDataValid">新增</el-button>
+        </div>
+    </el-dialog>
+
+
+    <el-dialog v-model="editDialogVisible" title="編輯付款資料" width="30%">
+        <el-form :model="editData" label-width="80px" :rules="createRules" ref="editForm" @input="checkEditDataValid" >
+            <el-form-item label="項目名稱" prop="itemName">
+                <el-input v-model="editData.itemName" placeholder="項目名稱" maxlength="64" show-word-limit></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="editDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="updateVoteItem" :disabled="!isEditDataValid">儲存</el-button>
+        </div>
+    </el-dialog>
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>

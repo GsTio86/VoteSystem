@@ -1,0 +1,19 @@
+package me.gt.votesystem.model;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class VoteStats {
+
+    @Schema(name = "item_id", description = "投票項目編號")
+    private Integer itemId;
+
+    @Schema(name = "item_name", description = "投票項目名稱")
+    private String itemName;
+
+    @Schema (name = "vote_count", description = "投票數量")
+    private Integer voteCount;
+}
