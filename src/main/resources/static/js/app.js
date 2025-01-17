@@ -62,7 +62,10 @@ const app = createApp({
 
         const createVoteItem = async () => {
             if (createData.value.itemName === '') {
-                ElMessage.warning('請輸入項目名稱');
+                ElMessage({
+                    message: '請輸入項目名稱',
+                    type: 'warning',
+                })
                 return;
             }
             try {
@@ -72,16 +75,26 @@ const app = createApp({
                     }
                 });
                 ElMessage.success('成功新增投票項目');
-                createDialogVisible.value = false;
+                resetCreateData();
                 await loadVoteItems();
             } catch (error) {
                 ElMessage.error('新增失敗');
             }
         };
 
+        const resetCreateData = () => {
+            createData.value = {
+                itemName: ''
+            };
+            createDialogVisible.value = false;
+        }
+
         const updateVoteItem = async () => {
             if (editData.value.itemName === '') {
-                ElMessage.warning('請輸入項目名稱');
+                ElMessage({
+                    message: '請輸入項目名稱',
+                    type: 'warning',
+                })
                 return;
             }
             try {
@@ -94,7 +107,7 @@ const app = createApp({
                 );
                 if (response.data > 0) {
                     ElMessage.success('成功更新投票項目');
-                    editDialogVisible.value = false;
+                    resetEditData();
                     await loadVoteItems();
                 } else {
                     ElMessage.error('更新失敗');
@@ -103,6 +116,14 @@ const app = createApp({
                 ElMessage.error('無法取得投票項目資料');
             }
         };
+
+        const resetEditData = () => {
+            editData.value = {
+                itemId: '',
+                itemName: ''
+            };
+            editDialogVisible.value = false;
+        }
 
         const confirmDeleteVoteItem = async (itemId) => {
             ElMessageBox.confirm('此操作將永久刪除該投票項目資料, 是否繼續?', '警告', {
@@ -150,7 +171,7 @@ const app = createApp({
             currentPage.value = newPage;
         };
 
-        const formRules = ref({
+        const createRules = ref({
             itemName: [
                 {
                     required: true, message: '請輸入項目名稱', trigger: 'blur'
@@ -177,21 +198,21 @@ const app = createApp({
 
         const checkCreateDataValid = async () => {
             if (createForm.value) {
-                await createForm.value.validate().then((valid) => {
-                    isCreateDataValid.value = valid;
-                }).catch(() => {
+                try {
+                    isCreateDataValid.value = await createForm.value.validate();
+                } catch (error) {
                     isCreateDataValid.value = false;
-                });
+                }
             }
         }
 
         const checkEditDataValid = async () => {
             if (editForm.value) {
-                await editForm.value.validate().then((valid) => {
-                    isEditDataValid.value = valid;
-                }).catch(() => {
+                try {
+                    isEditDataValid.value = await editForm.value.validate();
+                } catch (error) {
                     isEditDataValid.value = false;
-                });
+                }
             }
         };
 
@@ -209,7 +230,7 @@ const app = createApp({
             createData,
             createDialogVisible,
             createVoteItem,
-            createRules: formRules,
+            createRules,
             editForm,
             editData,
             editDialogVisible,
