@@ -23,7 +23,7 @@
 </template>
 <script>
 import {ref, onMounted} from 'vue';
-import axios from 'axios';
+import {getVoteItems, submitVoteForm} from "@/utils/api.js";
 import {ElMessage} from 'element-plus';
 
 export default {
@@ -39,7 +39,7 @@ export default {
 
     const loadVoteSelect = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/vote/items`);
+        const response = await getVoteItems();
         voteSelect.value = response.data;
       } catch (error) {
         ElMessage.error('無法取得投票項目');
@@ -52,9 +52,9 @@ export default {
         return;
       }
       try {
-        await axios.post(`${import.meta.env.VITE_API_URL}/api/vote`, {
+        await submitVoteForm({
           user: voteData.value.user,
-          itemIds: voteData.value.itemIds,
+          itemIds: voteData.value.itemIds
         });
         ElMessage.success('成功進行投票');
         await loadVoteSelect();

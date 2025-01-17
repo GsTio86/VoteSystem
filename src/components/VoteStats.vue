@@ -9,7 +9,7 @@
 </template>
 <script>
 import {ref, onMounted, onBeforeUnmount } from "vue";
-import axios from 'axios';
+import {getVoteStats} from "@/utils/api.js";
 import {ElMessage} from 'element-plus';
 
 export default {
@@ -20,7 +20,7 @@ export default {
 
     const loadVoteStats = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/vote/stats`);
+        const response = await getVoteStats();
         statsData.value = response.data;
       } catch (error) {
         ElMessage.error('無法取得投票統計資料');
