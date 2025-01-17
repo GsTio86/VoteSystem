@@ -16,7 +16,6 @@ public class VoteItem {
     @Schema(name = "item_name", description = "投票項目名稱")
     private String itemName;
 
-
     @Schema(name = "vote_count", description = "投票數")
     private Integer voteCount;
 }

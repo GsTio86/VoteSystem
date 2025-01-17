@@ -1,7 +1,6 @@
 package me.gt.votesystem.service;
 
 import me.gt.votesystem.model.VoteItem;
-import me.gt.votesystem.model.VoteLog;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

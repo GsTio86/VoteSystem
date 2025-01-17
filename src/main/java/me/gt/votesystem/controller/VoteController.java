@@ -54,7 +54,7 @@ public class VoteController {
             item.setItemName(escapeHtml(item.getItemName()));
             return item;
         }
-        return item;
+        return null;
     }
 
     @Operation(summary = "更新投票項目")
@@ -78,7 +78,7 @@ public class VoteController {
     private VoteLogsService voteLogsService;
 
     @Operation(summary = "新增投票紀錄")
-    @PostMapping("/vote/")
+    @PostMapping("/vote")
     public ResponseEntity<String> addVoteLog(@RequestBody VoteLogDto voteLogDto) {
         if (!voteLogDto.getUser().matches(DATA_REGEX)) {
             return ResponseEntity.badRequest().body("新增投票紀錄失敗，請檢查資料格式");
